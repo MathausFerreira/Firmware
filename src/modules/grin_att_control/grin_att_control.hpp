@@ -34,7 +34,7 @@
 /**
  *
  * This module is a modification of the rover attitide control module and is designed for the
- * TUHH hippocampus.
+ * AERO4BOAT.
  *
  * All the acknowledgments and credits for the fw wing app are reported in those files.
  *
@@ -87,21 +87,21 @@ using matrix::Dcmf;
 
 using uORB::SubscriptionData;
 
-class UUVAttitudeControl: public ModuleBase<UUVAttitudeControl>, public ModuleParams
+class GRINAttitudeControl: public ModuleBase<GRINAttitudeControl>, public ModuleParams
 {
 public:
-	UUVAttitudeControl();
-	~UUVAttitudeControl();
+        GRINAttitudeControl();
+        ~GRINAttitudeControl();
 
-	UUVAttitudeControl(const UUVAttitudeControl &) = delete;
-	UUVAttitudeControl operator=(const UUVAttitudeControl &other) = delete;
+        GRINAttitudeControl(const GRINAttitudeControl &) = delete;
+        GRINAttitudeControl operator=(const GRINAttitudeControl &other) = delete;
 
 
 	/** @see ModuleBase */
 	static int task_spawn(int argc, char *argv[]);
 
 	/** @see ModuleBase */
-	static UUVAttitudeControl *instantiate(int argc, char *argv[]);
+        static GRINAttitudeControl *instantiate(int argc, char *argv[]);
 
 	static int custom_command(int argc, char *argv[]);
 
@@ -153,19 +153,19 @@ private:
 	int loop_counter = 0;
 
 	DEFINE_PARAMETERS(
-		(ParamFloat<px4::params::UUV_ROLL_P>) _param_roll_p,
-		(ParamFloat<px4::params::UUV_ROLL_D>) _param_roll_d,
-		(ParamFloat<px4::params::UUV_PITCH_P>) _param_pitch_p,
-		(ParamFloat<px4::params::UUV_PITCH_D>) _param_pitch_d,
-		(ParamFloat<px4::params::UUV_YAW_P>) _param_yaw_p,
-		(ParamFloat<px4::params::UUV_YAW_D>) _param_yaw_d,
+                (ParamFloat<px4::params::GRI_ROLL_P>) _param_roll_p,
+                (ParamFloat<px4::params::GRI_ROLL_D>) _param_roll_d,
+                (ParamFloat<px4::params::GRI_PITCH_P>) _param_pitch_p,
+                (ParamFloat<px4::params::GRI_PITCH_D>) _param_pitch_d,
+                (ParamFloat<px4::params::GRI_YAW_P>) _param_yaw_p,
+                (ParamFloat<px4::params::GRI_YAW_D>) _param_yaw_d,
 		// control/input modes
-		(ParamInt<px4::params::UUV_INPUT_MODE>) _param_input_mode,
+                (ParamInt<px4::params::GRI_INPUT_MODE>) _param_input_mode,
 		// direct access to inputs
-		(ParamFloat<px4::params::UUV_DIRCT_ROLL>) _param_direct_roll,
-		(ParamFloat<px4::params::UUV_DIRCT_PITCH>) _param_direct_pitch,
-		(ParamFloat<px4::params::UUV_DIRCT_YAW>) _param_direct_yaw,
-		(ParamFloat<px4::params::UUV_DIRCT_THRUST>) _param_direct_thrust
+                (ParamFloat<px4::params::GRI_DIRCT_ROLL>) _param_direct_roll,
+                (ParamFloat<px4::params::GRI_DIRCT_PITCH>) _param_direct_pitch,
+                (ParamFloat<px4::params::GRI_DIRCT_YAW>) _param_direct_yaw,
+                (ParamFloat<px4::params::GRI_DIRCT_THRUST>) _param_direct_thrust
 	)
 
 	/**

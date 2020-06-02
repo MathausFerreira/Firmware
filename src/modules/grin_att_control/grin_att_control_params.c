@@ -32,7 +32,7 @@
  ****************************************************************************/
 
 /**
- * @file uuv_att_control_params.c
+ * @file grin_att_control_params.c
  *
  * Parameters defined by the attitude control task for unmanned underwater vehicles (UUVs)
  *
@@ -41,7 +41,7 @@
  *
  * All the ackowledgments and credits for the fw wing/rover app are reported in those files.
  *
- * @author Daniel Duecker <daniel.duecker@tuhh.de>
+ * @author Mathaus Ferreira <mathaus.silva@engenharia.ufjf.br>
  */
 
 /*
@@ -53,48 +53,48 @@
 /**
  * Roll proportional gain
  *
- * @group UUV Attitude Control
+ * @group GRIN Attitude Control
  */
-PARAM_DEFINE_FLOAT(UUV_ROLL_P, 4.0f);
+PARAM_DEFINE_FLOAT(GRI_ROLL_P, 4.0f);
 
 /**
  * Roll differential gain
  *
- * @group UUV Attitude Control
+ * @group GRIN Attitude Control
  */
-PARAM_DEFINE_FLOAT(UUV_ROLL_D, 1.5f);
+PARAM_DEFINE_FLOAT(GRI_ROLL_D, 1.5f);
 
 
 // Pitch gains
 /**
  * Pitch proportional gain
  *
- * @group UUV Attitude Control
+ * @group GRIN Attitude Control
  */
-PARAM_DEFINE_FLOAT(UUV_PITCH_P, 4.0f);
+PARAM_DEFINE_FLOAT(GRI_PITCH_P, 4.0f);
 
 /**
  * Pitch differential gain
  *
- * @group UUV Attitude Control
+ * @group GRIN Attitude Control
  */
-PARAM_DEFINE_FLOAT(UUV_PITCH_D, 2.0f);
+PARAM_DEFINE_FLOAT(GRI_PITCH_D, 2.0f);
 
 
 // Yaw gains
 /**
  * Yawh proportional gain
  *
- * @group UUV Attitude Control
+ * @group GRIN Attitude Control
  */
-PARAM_DEFINE_FLOAT(UUV_YAW_P, 4.0f);
+PARAM_DEFINE_FLOAT(GRI_YAW_P, 4.0f);
 
 /**
  * Yaw differential gain
  *
- * @group UUV Attitude Control
+ * @group GRIN Attitude Control
  */
-PARAM_DEFINE_FLOAT(UUV_YAW_D, 2.0f);
+PARAM_DEFINE_FLOAT(GRI_YAW_D, 2.0f);
 
 
 // Input Modes
@@ -103,34 +103,34 @@ PARAM_DEFINE_FLOAT(UUV_YAW_D, 2.0f);
  *
  * @value 0 use Attitude Setpoints
  * @value 1 Direct Feedthrough
- * @group UUV Attitude Control
+ * @group GRIN Attitude Control
  */
-PARAM_DEFINE_INT32(UUV_INPUT_MODE, 0);
+PARAM_DEFINE_INT32(GRI_INPUT_MODE, 0);
 
 /**
  * Direct roll input
  *
  * @group UUV Attitude Control
  */
-PARAM_DEFINE_FLOAT(UUV_DIRCT_ROLL, 0.0f);
+PARAM_DEFINE_FLOAT(GRI_DIRCT_ROLL, 0.0f);
 
 /**
  * Direct pitch input
  *
- * @group UUV Attitude Control
+ * @group GRIN Attitude Control
  */
-PARAM_DEFINE_FLOAT(UUV_DIRCT_PITCH, 0.0f);
+PARAM_DEFINE_FLOAT(GRI_DIRCT_PITCH, 0.0f);
 
 /**
  * Direct yaw input
  *
- * @group UUV Attitude Control
+ * @group GRIN Attitude Control
  */
-PARAM_DEFINE_FLOAT(UUV_DIRCT_YAW, 0.0f);
+PARAM_DEFINE_FLOAT(GRI_DIRCT_YAW, 0.0f);
 
 /**
  * Direct thrust input
  *
- * @group UUV Attitude Control
+ * @group GRIN Attitude Control
  */
-PARAM_DEFINE_FLOAT(UUV_DIRCT_THRUST, 0.0f);
+PARAM_DEFINE_FLOAT(GRI_DIRCT_THRUST, 0.0f);

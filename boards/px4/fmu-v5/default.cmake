@@ -90,6 +90,7 @@ px4_add_board(
 		temperature_compensation
 		vmount
 		vtol_att_control
+		grin_att_control
 	SYSTEMCMDS
 		bl_update
 		dmesg

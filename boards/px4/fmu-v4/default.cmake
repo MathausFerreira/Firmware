@@ -84,6 +84,7 @@ px4_add_board(
 		sih
 		temperature_compensation
 		uuv_att_control
+		grin_att_control
 		vmount
 		vtol_att_control
 	SYSTEMCMDS

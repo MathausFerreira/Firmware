@@ -31,45 +31,33 @@
  *
  ****************************************************************************/
 
-/**
- *
- * This module is a modification of the fixed wing / rover module  and it is designed for unmanned underwater vehicles  (UUV).
- * It has been developed starting from the fw module, simplified and improved with dedicated items.
- *
- * All the acknowledgments and credits for the fw wing/rover app are reported in those files.
- *
- * @author Daniel Duecker <daniel.duecker@tuhh.de>
- * @author Philipp Hastedt <philipp.hastedt@tuhh.de>
- * @author Tim Hansen <t.hansen@tuhh.de>
- */
-
-#include "uuv_att_control.hpp"
+#include "grin_att_control.hpp"
 
 
 #define ACTUATOR_PUBLISH_PERIOD_MS 4
 
 
 /**
- * UUV attitude control app start / stop handling function
+ * GRIN attitude control app start / stop handling function
  *
  * @ingroup apps
  */
-extern "C" __EXPORT int uuv_att_control_main(int argc, char *argv[]);
+extern "C" __EXPORT int grin_att_control_main(int argc, char *argv[]);
 
 
-UUVAttitudeControl::UUVAttitudeControl():
+GRINAttitudeControl::GRINAttitudeControl():
 	ModuleParams(nullptr),
 	/* performance counters */
 	_loop_perf(perf_alloc(PC_ELAPSED, "gnda_dt"))
 {
 }
 
-UUVAttitudeControl::~UUVAttitudeControl()
+GRINAttitudeControl::~GRINAttitudeControl()
 {
 	perf_free(_loop_perf);
 }
 
-void UUVAttitudeControl::parameters_update(bool force)
+void GRINAttitudeControl::parameters_update(bool force)
 {
 	// check for parameter updates
 	if (_parameter_update_sub.updated() || force) {
@@ -82,7 +70,7 @@ void UUVAttitudeControl::parameters_update(bool force)
 	}
 }
 
-void UUVAttitudeControl::vehicle_control_mode_poll()
+void GRINAttitudeControl::vehicle_control_mode_poll()
 {
 	bool updated = false;
 	orb_check(_vcontrol_mode_sub, &updated);
@@ -92,7 +80,7 @@ void UUVAttitudeControl::vehicle_control_mode_poll()
 	}
 }
 
-void UUVAttitudeControl::manual_control_setpoint_poll()
+void GRINAttitudeControl::manual_control_setpoint_poll()
 {
 	bool updated = false;
 	orb_check(_manual_control_sub, &updated);
@@ -102,7 +90,7 @@ void UUVAttitudeControl::manual_control_setpoint_poll()
 	}
 }
 
-void UUVAttitudeControl::vehicle_attitude_setpoint_poll()
+void GRINAttitudeControl::vehicle_attitude_setpoint_poll()
 {
 	bool updated = false;
 	orb_check(_vehicle_attitude_sp_sub, &updated);
@@ -113,7 +101,7 @@ void UUVAttitudeControl::vehicle_attitude_setpoint_poll()
 }
 
 
-void UUVAttitudeControl::constrain_actuator_commands(float roll_u, float pitch_u, float yaw_u, float thrust_u)
+void GRINAttitudeControl::constrain_actuator_commands(float roll_u, float pitch_u, float yaw_u, float thrust_u)
 {
 	if (PX4_ISFINITE(roll_u)) {
 		roll_u = math::constrain(roll_u, -1.0f, 1.0f);
@@ -165,7 +153,7 @@ void UUVAttitudeControl::constrain_actuator_commands(float roll_u, float pitch_u
 }
 
 
-void UUVAttitudeControl::control_attitude_geo(const vehicle_attitude_s &att, const vehicle_attitude_setpoint_s &att_sp)
+void GRINAttitudeControl::control_attitude_geo(const vehicle_attitude_s &att, const vehicle_attitude_setpoint_s &att_sp)
 {
 	/** Geometric Controller
 	 *
@@ -242,7 +230,7 @@ void UUVAttitudeControl::control_attitude_geo(const vehicle_attitude_s &att, con
 }
 
 
-void UUVAttitudeControl::run()
+void GRINAttitudeControl::run()
 {
 	_vehicle_attitude_sp_sub = orb_subscribe(ORB_ID(vehicle_attitude_setpoint));
 	_vehicle_attitude_sub = orb_subscribe(ORB_ID(vehicle_attitude));
@@ -371,14 +359,14 @@ void UUVAttitudeControl::run()
 	warnx("exiting.\n");
 }
 
-int UUVAttitudeControl::task_spawn(int argc, char *argv[])
+int GRINAttitudeControl::task_spawn(int argc, char *argv[])
 {
 	/* start the task */
-	_task_id = px4_task_spawn_cmd("uuv_att_ctrl",
+	_task_id = px4_task_spawn_cmd("GRIN_att_ctrl",
 				      SCHED_DEFAULT,
 				      SCHED_PRIORITY_ATTITUDE_CONTROL,
 				      1700,  // maybe switch to 1500
-				      (px4_main_t)&UUVAttitudeControl::run_trampoline,
+				      (px4_main_t)&GRINAttitudeControl::run_trampoline,
 				      nullptr);
 
 	if (_task_id < 0) {
@@ -389,7 +377,7 @@ int UUVAttitudeControl::task_spawn(int argc, char *argv[])
 	return OK;
 }
 
-UUVAttitudeControl *UUVAttitudeControl::instantiate(int argc, char *argv[])
+GRINAttitudeControl *GRINAttitudeControl::instantiate(int argc, char *argv[])
 {
 
 	if (argc > 0) {
@@ -397,22 +385,22 @@ UUVAttitudeControl *UUVAttitudeControl::instantiate(int argc, char *argv[])
 		return nullptr;
 	}
 
-	UUVAttitudeControl *instance = new UUVAttitudeControl();
+	GRINAttitudeControl *instance = new GRINAttitudeControl();
 
 	if (instance == nullptr) {
-		PX4_ERR("Failed to instantiate UUVAttitudeControl object");
+		PX4_ERR("Failed to instantiate GRINAttitudeControl object");
 	}
 
 	return instance;
 }
 
-int UUVAttitudeControl::custom_command(int argc, char *argv[])
+int GRINAttitudeControl::custom_command(int argc, char *argv[])
 {
 	return print_usage("unknown command");
 }
 
 
-int UUVAttitudeControl::print_usage(const char *reason)
+int GRINAttitudeControl::print_usage(const char *reason)
 {
 	if (reason) {
 		PX4_WARN("%s\n", reason);
@@ -421,7 +409,7 @@ int UUVAttitudeControl::print_usage(const char *reason)
 	PRINT_MODULE_DESCRIPTION(
 		R"DESCR_STR(
 ### Description
-Controls the attitude of an unmanned underwater vehicle (UUV).
+Controls the attitude of an unmanned underwater vehicle (GRIN).
 
 Publishes `actuator_controls_0` messages at a constant 250Hz.
 
@@ -429,24 +417,24 @@ Publishes `actuator_controls_0` messages at a constant 250Hz.
 Currently, this implementation supports only a few modes:
 
  * Full manual: Roll, pitch, yaw, and throttle controls are passed directly through to the actuators
- * Auto mission: The uuv runs missions
+ * Auto mission: The GRIN runs missions
 
 ### Examples
 CLI usage example:
-$ uuv_att_control start
-$ uuv_att_control status
-$ uuv_att_control stop
+$ GRIN_att_control start
+$ GRIN_att_control status
+$ GRIN_att_control stop
 
 )DESCR_STR");
 
-	PRINT_MODULE_USAGE_NAME("uuv_att_control", "controller");
+	PRINT_MODULE_USAGE_NAME("GRIN_att_control", "controller");
 	PRINT_MODULE_USAGE_COMMAND("start")
 	PRINT_MODULE_USAGE_DEFAULT_COMMANDS();
 
 	return 0;
 }
 
-int uuv_att_control_main(int argc, char *argv[])
+int grin_att_control_main(int argc, char *argv[])
 {
-	return UUVAttitudeControl::main(argc, argv);
+	return GRINAttitudeControl::main(argc, argv);
 }

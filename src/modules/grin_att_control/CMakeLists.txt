@@ -33,8 +33,8 @@
 px4_add_module(
 	MODULE modules__grin_att_control
 	MAIN grin_att_control
-	STACK_MAIN 1200
-	COMPILE_FLAGS
+	STACK_MAIN 2000
 	SRCS
 		grin_att_control.cpp
 	)
+
