@@ -30,11 +30,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 ############################################################################
+
+#add_subdirectory(AttitudeControl)
+
 px4_add_module(
 	MODULE modules__grin_att_control
 	MAIN grin_att_control
-	STACK_MAIN 2000
+        #COMPILE_FLAGS
 	SRCS
 		grin_att_control.cpp
+        DEPENDS
+                mathlib
+                AttitudeControl
+                px4_work_queue
 	)
-

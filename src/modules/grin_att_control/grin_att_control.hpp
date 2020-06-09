@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2020 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2013-2019 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,162 +31,138 @@
  *
  ****************************************************************************/
 
-/**
- *
- * This module is a modification of the rover attitide control module and is designed for the
- * AERO4BOAT.
- *
- * All the acknowledgments and credits for the fw wing app are reported in those files.
- *
- * @author Daniel Duecker <daniel.duecker@tuhh.de>
- * @author Philipp Hastedt <philipp.hastedt@tuhh.de>
- * @author Tim Hansen <t.hansen@tuhh.de>
- */
+#pragma once
 
-
-
-#include <float.h>
-
-#include <drivers/drv_hrt.h>
-#include <lib/ecl/geo/geo.h>
-#include <lib/mathlib/mathlib.h>
-#include <lib/perf/perf_counter.h>
-#include <lib/pid/pid.h>
-#include <matrix/math.hpp>
+#include <lib/mixer/Mixer/Mixer.hpp> // Airmode
+#include <matrix/matrix/math.hpp>
+#include <perf/perf_counter.h>
 #include <px4_platform_common/px4_config.h>
 #include <px4_platform_common/defines.h>
-#include <px4_platform_common/posix.h>
-#include <px4_platform_common/tasks.h>
 #include <px4_platform_common/module.h>
 #include <px4_platform_common/module_params.h>
-#include <uORB/Subscription.hpp>
+#include <px4_platform_common/posix.h>
+#include <px4_platform_common/px4_work_queue/WorkItem.hpp>
 #include <uORB/Publication.hpp>
+#include <uORB/Subscription.hpp>
+#include <uORB/SubscriptionCallback.hpp>
 #include <uORB/topics/manual_control_setpoint.h>
 #include <uORB/topics/parameter_update.h>
-#include <uORB/topics/position_controller_status.h>
-#include <uORB/topics/sensor_combined.h>
-#include <uORB/topics/vehicle_acceleration.h>
 #include <uORB/topics/vehicle_attitude.h>
 #include <uORB/topics/vehicle_attitude_setpoint.h>
-#include <uORB/topics/vehicle_angular_velocity.h>
-#include <uORB/topics/vehicle_rates_setpoint.h>
 #include <uORB/topics/vehicle_control_mode.h>
-#include <uORB/topics/vehicle_local_position.h>
-#include <uORB/topics/actuator_controls.h>
-#include <uORB/topics/ekf2_timestamps.h>
-#include <uORB/uORB.h>
+#include <uORB/topics/vehicle_rates_setpoint.h>
+#include <uORB/topics/vehicle_status.h>
+#include <uORB/topics/vehicle_land_detected.h>
+#include <vtol_att_control/vtol_type.h>
 
+#include <AttitudeControl.hpp>
 
+/**
+ * Multicopter attitude control app start / stop handling function
+ */
+extern "C" __EXPORT int grin_att_control_main(int argc, char *argv[]);
 
-
-using matrix::Eulerf;
-using matrix::Quatf;
-using matrix::Matrix3f;
-using matrix::Vector3f;
-using matrix::Dcmf;
-
-using uORB::SubscriptionData;
-
-class GRINAttitudeControl: public ModuleBase<GRINAttitudeControl>, public ModuleParams
+class GrinAttitudeControl : public ModuleBase<GrinAttitudeControl>, public ModuleParams,
+        public px4::WorkItem
 {
 public:
-        GRINAttitudeControl();
-        ~GRINAttitudeControl();
+        GrinAttitudeControl(bool vtol = false);
+        ~GrinAttitudeControl() override;
 
-        GRINAttitudeControl(const GRINAttitudeControl &) = delete;
-        GRINAttitudeControl operator=(const GRINAttitudeControl &other) = delete;
+        /** @see ModuleBase */
+        static int task_spawn(int argc, char *argv[]);
 
+        /** @see ModuleBase */
+        static int custom_command(int argc, char *argv[]);
 
-	/** @see ModuleBase */
-	static int task_spawn(int argc, char *argv[]);
+        /** @see ModuleBase */
+        static int print_usage(const char *reason = nullptr);
 
-	/** @see ModuleBase */
-        static GRINAttitudeControl *instantiate(int argc, char *argv[]);
-
-	static int custom_command(int argc, char *argv[]);
-
-	/** @see ModuleBase */
-	static int print_usage(const char *reason = nullptr);
-
-	/** @see ModuleBase::run() */
-	void run() override;
-
-
-//	int start();
-//	bool task_running() { return _task_running; }
+        bool init();
 
 private:
-	uORB::Publication<position_controller_status_s>	_pos_ctrl_status_pub{ORB_ID(position_controller_status)};
-	uORB::Publication<actuator_controls_s>		    _actuator_controls_pub{ORB_ID(actuator_controls_0)};
+        void Run() override;
 
-	uORB::Subscription	_parameter_update_sub{ORB_ID(parameter_update)};
+        /**
+         * initialize some vectors/matrices from parameters
+         */
+        void		parameters_updated();
 
-	int	_vehicle_attitude_sp_sub{-1};	/**< vehicle attitude setpoint */
-	int	_battery_status_sub{-1};	/**< battery status subscription */
-	int	_vehicle_attitude_sub{-1};	/**< control state subscription */
-	int	_angular_velocity_sub{-1};	/**< vehicle angular velocity subscription */
-	int	_local_pos_sub{-1};		/**< local position subscription */
-	int	_manual_control_sub{-1};	/**< notification of manual control updates */
-	int	_vcontrol_mode_sub{-1};		/**< vehicle status subscription */
-	int	_sensor_combined_sub{-1};	/**< sensor combined subscription */
+        void		publish_rates_setpoint();
 
-	actuator_controls_s		_actuators {};		/**< actuator control inputs */
-	manual_control_setpoint_s	_manual {};		/**< r/c channel data */
-	vehicle_attitude_s		_vehicle_attitude {};	/**< control state */
-	vehicle_angular_velocity_s	_angular_velocity{};	/**< angular velocity */
-	vehicle_attitude_setpoint_s	_vehicle_attitude_sp {};/**< vehicle attitude setpoint */
-	vehicle_control_mode_s		_vcontrol_mode {};	/**< vehicle control mode */
-	sensor_combined_s		_sensor_combined{};
-	vehicle_local_position_s	_local_pos{};		/**< vehicle local position */
+        float		throttle_curve(float throttle_stick_input);
 
+        /**
+         * Generate & publish an attitude setpoint from stick inputs
+         */
+        void		generate_attitude_setpoint(float dt, bool reset_yaw_sp);
 
-	SubscriptionData<vehicle_acceleration_s>		_vehicle_acceleration_sub{ORB_ID(vehicle_acceleration)};
-	hrt_abstime _control_position_last_called{0}; 	/**<last call of control_position  */
-	perf_counter_t	_loop_perf;			/**< loop performance counter */
+        /**
+         * Attitude controller.
+         */
+        void		control_attitude();
 
+        AttitudeControl _attitude_control; ///< class for attitude control calculations
 
-	// estimator reset counters
-	uint8_t _pos_reset_counter{0};		// captures the number of times the estimator has reset the horizontal position
+        uORB::Subscription _v_att_sp_sub{ORB_ID(vehicle_attitude_setpoint)};		/**< vehicle attitude setpoint subscription */
+        uORB::Subscription _v_rates_sp_sub{ORB_ID(vehicle_rates_setpoint)};		/**< vehicle rates setpoint subscription */
+        uORB::Subscription _v_control_mode_sub{ORB_ID(vehicle_control_mode)};		/**< vehicle control mode subscription */
+        uORB::Subscription _params_sub{ORB_ID(parameter_update)};			/**< parameter updates subscription */
+        uORB::Subscription _manual_control_sp_sub{ORB_ID(manual_control_setpoint)};	/**< manual control setpoint subscription */
+        uORB::Subscription _vehicle_status_sub{ORB_ID(vehicle_status)};			/**< vehicle status subscription */
+        uORB::Subscription _vehicle_land_detected_sub{ORB_ID(vehicle_land_detected)};	/**< vehicle land detected subscription */
 
+        uORB::SubscriptionCallbackWorkItem _vehicle_attitude_sub{this, ORB_ID(vehicle_attitude)};
 
-	bool _debug{false};	/**< if set to true, print debug output */
-	int loop_counter = 0;
+        uORB::Publication<vehicle_rates_setpoint_s>	_v_rates_sp_pub{ORB_ID(vehicle_rates_setpoint)};			/**< rate setpoint publication */
+        uORB::Publication<vehicle_attitude_setpoint_s>	_vehicle_attitude_setpoint_pub;
 
-	DEFINE_PARAMETERS(
-                (ParamFloat<px4::params::GRI_ROLL_P>) _param_roll_p,
-                (ParamFloat<px4::params::GRI_ROLL_D>) _param_roll_d,
-                (ParamFloat<px4::params::GRI_PITCH_P>) _param_pitch_p,
-                (ParamFloat<px4::params::GRI_PITCH_D>) _param_pitch_d,
-                (ParamFloat<px4::params::GRI_YAW_P>) _param_yaw_p,
-                (ParamFloat<px4::params::GRI_YAW_D>) _param_yaw_d,
-		// control/input modes
-                (ParamInt<px4::params::GRI_INPUT_MODE>) _param_input_mode,
-		// direct access to inputs
-                (ParamFloat<px4::params::GRI_DIRCT_ROLL>) _param_direct_roll,
-                (ParamFloat<px4::params::GRI_DIRCT_PITCH>) _param_direct_pitch,
-                (ParamFloat<px4::params::GRI_DIRCT_YAW>) _param_direct_yaw,
-                (ParamFloat<px4::params::GRI_DIRCT_THRUST>) _param_direct_thrust
-	)
+        struct vehicle_attitude_s		_v_att {};		/**< vehicle attitude */
+        struct vehicle_attitude_setpoint_s	_v_att_sp {};		/**< vehicle attitude setpoint */
+        struct vehicle_rates_setpoint_s		_v_rates_sp {};		/**< vehicle rates setpoint */
+        struct manual_control_setpoint_s	_manual_control_sp {};	/**< manual control setpoint */
+        struct vehicle_control_mode_s		_v_control_mode {};	/**< vehicle control mode */
+        struct vehicle_status_s			_vehicle_status {};	/**< vehicle status */
+        struct vehicle_land_detected_s		_vehicle_land_detected {};
 
-	/**
-	 * Update our local parameter cache.
-	 */
-	void	parameters_update(bool force = false);
+        perf_counter_t	_loop_perf;			/**< loop duration performance counter */
 
-	void	manual_control_setpoint_poll();
-	void	position_setpoint_triplet_poll();
-	void	vehicle_control_mode_poll();
-	void 	vehicle_attitude_poll();
-	void	vehicle_attitude_setpoint_poll();
-	void	vehicle_local_position_poll();
+        matrix::Vector3f _rates_sp;			/**< angular rates setpoint */
 
-	/**
-	 * Control Attitude
-	 */
-	void control_attitude_geo(const vehicle_attitude_s &att, const vehicle_attitude_setpoint_s &att_sp);
+        float _man_yaw_sp{0.f};				/**< current yaw setpoint in manual mode */
 
-	void control_attitude_pid(const vehicle_attitude_s &att, const vehicle_attitude_setpoint_s &att_sp, float deltaT);
-	void constrain_actuator_commands(float roll_u, float pitch_u, float yaw_u, float thrust_u);
+        hrt_abstime _last_run{0};
 
+        bool _reset_yaw_sp{true};
+
+        DEFINE_PARAMETERS(
+                (ParamFloat<px4::params::MC_ROLL_P>) _param_mc_roll_p,
+                (ParamFloat<px4::params::MC_PITCH_P>) _param_mc_pitch_p,
+                (ParamFloat<px4::params::MC_YAW_P>) _param_mc_yaw_p,
+                (ParamFloat<px4::params::MC_YAW_WEIGHT>) _param_mc_yaw_weight,
+
+                (ParamFloat<px4::params::MC_ROLLRATE_MAX>) _param_mc_rollrate_max,
+                (ParamFloat<px4::params::MC_PITCHRATE_MAX>) _param_mc_pitchrate_max,
+                (ParamFloat<px4::params::MC_YAWRATE_MAX>) _param_mc_yawrate_max,
+
+                (ParamFloat<px4::params::MPC_MAN_Y_MAX>) _param_mpc_man_y_max,			/**< scaling factor from stick to yaw rate */
+
+                (ParamFloat<px4::params::MC_RATT_TH>) _param_mc_ratt_th,
+
+                /* Stabilized mode params */
+                (ParamFloat<px4::params::MPC_MAN_TILT_MAX>) _param_mpc_man_tilt_max,			/**< maximum tilt allowed for manual flight */
+                (ParamFloat<px4::params::MPC_MANTHR_MIN>) _param_mpc_manthr_min,			/**< minimum throttle for stabilized */
+                (ParamFloat<px4::params::MPC_THR_MAX>) _param_mpc_thr_max,				/**< maximum throttle for stabilized */
+                (ParamFloat<px4::params::MPC_THR_HOVER>)
+                _param_mpc_thr_hover,			/**< throttle at which vehicle is at hover equilibrium */
+                (ParamInt<px4::params::MPC_THR_CURVE>) _param_mpc_thr_curve,				/**< throttle curve behavior */
+
+                (ParamInt<px4::params::MC_AIRMODE>) _param_mc_airmode
+        )
+
+        bool _is_tailsitter{false};
+
+        float _man_tilt_max;			/**< maximum tilt allowed for manual flight [rad] */
 
 };
+

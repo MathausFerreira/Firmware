@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2013-2020 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2013-2015 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,7 +17,7 @@
  *    without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * AS IS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
  * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
@@ -32,105 +32,134 @@
  ****************************************************************************/
 
 /**
- * @file grin_att_control_params.c
+ * @file mc_att_control_params.c
+ * Parameters for multicopter attitude controller.
  *
- * Parameters defined by the attitude control task for unmanned underwater vehicles (UUVs)
- *
- * This is a modification of the fixed wing/ground rover params and it is designed for ground rovers.
- * It has been developed starting from the fw  module, simplified and improved with dedicated items.
- *
- * All the ackowledgments and credits for the fw wing/rover app are reported in those files.
- *
- * @author Mathaus Ferreira <mathaus.silva@engenharia.ufjf.br>
+ * @author Lorenz Meier <lorenz@px4.io>
+ * @author Anton Babushkin <anton@px4.io>
  */
-
-/*
- * Controller parameters, accessible via MAVLink
- *
- */
-
-// Roll gains
-/**
- * Roll proportional gain
- *
- * @group GRIN Attitude Control
- */
-PARAM_DEFINE_FLOAT(GRI_ROLL_P, 4.0f);
 
 /**
- * Roll differential gain
+ * Roll P gain
  *
- * @group GRIN Attitude Control
- */
-PARAM_DEFINE_FLOAT(GRI_ROLL_D, 1.5f);
-
-
-// Pitch gains
-/**
- * Pitch proportional gain
+ * Roll proportional gain, i.e. desired angular speed in rad/s for error 1 rad.
  *
- * @group GRIN Attitude Control
+ * @unit 1/s
+ * @min 0.0
+ * @max 12
+ * @decimal 2
+ * @increment 0.1
+ * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(GRI_PITCH_P, 4.0f);
+PARAM_DEFINE_FLOAT(MC_ROLL_P, 6.5f);
 
 /**
- * Pitch differential gain
+ * Pitch P gain
  *
- * @group GRIN Attitude Control
- */
-PARAM_DEFINE_FLOAT(GRI_PITCH_D, 2.0f);
-
-
-// Yaw gains
-/**
- * Yawh proportional gain
+ * Pitch proportional gain, i.e. desired angular speed in rad/s for error 1 rad.
  *
- * @group GRIN Attitude Control
+ * @unit 1/s
+ * @min 0.0
+ * @max 12
+ * @decimal 2
+ * @increment 0.1
+ * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(GRI_YAW_P, 4.0f);
+PARAM_DEFINE_FLOAT(MC_PITCH_P, 6.5f);
 
 /**
- * Yaw differential gain
+ * Yaw P gain
  *
- * @group GRIN Attitude Control
- */
-PARAM_DEFINE_FLOAT(GRI_YAW_D, 2.0f);
-
-
-// Input Modes
-/**
- * Select Input Mode
+ * Yaw proportional gain, i.e. desired angular speed in rad/s for error 1 rad.
  *
- * @value 0 use Attitude Setpoints
- * @value 1 Direct Feedthrough
- * @group GRIN Attitude Control
+ * @unit 1/s
+ * @min 0.0
+ * @max 5
+ * @decimal 2
+ * @increment 0.1
+ * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_INT32(GRI_INPUT_MODE, 0);
+PARAM_DEFINE_FLOAT(MC_YAW_P, 2.8f);
 
 /**
- * Direct roll input
+ * Yaw weight
  *
- * @group UUV Attitude Control
+ * A fraction [0,1] deprioritizing yaw compared to roll and pitch in non-linear attitude control.
+ * Deprioritizing yaw is necessary because multicopters have much less control authority
+ * in yaw compared to the other axes and it makes sense because yaw is not critical for
+ * stable hovering or 3D navigation.
+ *
+ * For yaw control tuning use MC_YAW_P. This ratio has no inpact on the yaw gain.
+ *
+ * @unit 1/s
+ * @min 0.0
+ * @max 1.0
+ * @decimal 2
+ * @increment 0.1
+ * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(GRI_DIRCT_ROLL, 0.0f);
+PARAM_DEFINE_FLOAT(MC_YAW_WEIGHT, 0.4f);
 
 /**
- * Direct pitch input
+ * Max roll rate
  *
- * @group GRIN Attitude Control
+ * Limit for roll rate in manual and auto modes (except acro).
+ * Has effect for large rotations in autonomous mode, to avoid large control
+ * output and mixer saturation.
+ *
+ * This is not only limited by the vehicle's properties, but also by the maximum
+ * measurement rate of the gyro.
+ *
+ * @unit deg/s
+ * @min 0.0
+ * @max 1800.0
+ * @decimal 1
+ * @increment 5
+ * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(GRI_DIRCT_PITCH, 0.0f);
+PARAM_DEFINE_FLOAT(MC_ROLLRATE_MAX, 220.0f);
 
 /**
- * Direct yaw input
+ * Max pitch rate
  *
- * @group GRIN Attitude Control
+ * Limit for pitch rate in manual and auto modes (except acro).
+ * Has effect for large rotations in autonomous mode, to avoid large control
+ * output and mixer saturation.
+ *
+ * This is not only limited by the vehicle's properties, but also by the maximum
+ * measurement rate of the gyro.
+ *
+ * @unit deg/s
+ * @min 0.0
+ * @max 1800.0
+ * @decimal 1
+ * @increment 5
+ * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(GRI_DIRCT_YAW, 0.0f);
+PARAM_DEFINE_FLOAT(MC_PITCHRATE_MAX, 220.0f);
 
 /**
- * Direct thrust input
+ * Max yaw rate
  *
- * @group GRIN Attitude Control
+ * @unit deg/s
+ * @min 0.0
+ * @max 1800.0
+ * @decimal 1
+ * @increment 5
+ * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(GRI_DIRCT_THRUST, 0.0f);
+PARAM_DEFINE_FLOAT(MC_YAWRATE_MAX, 200.0f);
+
+/**
+ * Threshold for Rattitude mode
+ *
+ * Manual input needed in order to override attitude control rate setpoints
+ * and instead pass manual stick inputs as rate setpoints
+ *
+ * @min 0.0
+ * @max 1.0
+ * @decimal 2
+ * @increment 0.01
+ * @group Multicopter Attitude Control
+ */
+PARAM_DEFINE_FLOAT(MC_RATT_TH, 0.8f);

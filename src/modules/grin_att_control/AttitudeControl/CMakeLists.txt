@@ -1,6 +1,6 @@
 ############################################################################
 #
-#   Copyright (c) 2018 PX4 Development Team. All rights reserved.
+#   Copyright (c) 2019 PX4 Development Team. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -31,26 +31,12 @@
 #
 ############################################################################
 
-add_subdirectory(airframes)
-
-px4_add_romfs_files(
-	rc.fw_apps
-	rc.fw_defaults
-	rc.interface
-	rc.io
-	rc.logging
-	rc.mc_apps
-	rc.mc_defaults
-	rcS
-	rc.sensors
-	rc.thermal_cal
-	rc.rover_apps
-	rc.rover_defaults
-	rc.uuv_apps
-	rc.uuv_defaults
-	rc.grin_apps
-	rc.grin_defaults
-	rc.vehicle_setup
-	rc.vtol_apps
-	rc.vtol_defaults
+px4_add_library(AttitudeControl
+	AttitudeControl.cpp
 )
+target_include_directories(AttitudeControl
+	PUBLIC
+	${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+px4_add_unit_gtest(SRC AttitudeControlTest.cpp LINKLIBS AttitudeControl)
