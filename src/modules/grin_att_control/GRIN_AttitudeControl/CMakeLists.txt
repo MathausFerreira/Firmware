@@ -31,12 +31,12 @@
 #
 ############################################################################
 
-px4_add_library(AttitudeControl
-	AttitudeControl.cpp
+px4_add_library(GRIN_AttitudeControl
+	GRIN_AttitudeControl.cpp
 )
-target_include_directories(AttitudeControl
+target_include_directories(GRIN_AttitudeControl
 	PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-px4_add_unit_gtest(SRC AttitudeControlTest.cpp LINKLIBS AttitudeControl)
+px4_add_unit_gtest(SRC GRIN_AttitudeControlTest.cpp LINKLIBS GRIN_AttitudeControl)

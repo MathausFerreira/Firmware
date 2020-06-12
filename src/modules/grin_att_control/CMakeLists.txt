@@ -31,16 +31,16 @@
 #
 ############################################################################
 
-#add_subdirectory(AttitudeControl)
+add_subdirectory(GRIN_AttitudeControl)
 
 px4_add_module(
-	MODULE modules__grin_att_control
-	MAIN grin_att_control
-        #COMPILE_FLAGS
-	SRCS
-		grin_att_control.cpp
+        MODULE modules__grin_att_control
+        MAIN grin_att_control
+       # COMPILE_FLAGS
+        SRCS
+                grin_att_control.cpp
         DEPENDS
                 mathlib
-                AttitudeControl
+                GRIN_AttitudeControl
                 px4_work_queue
-	)
+        )

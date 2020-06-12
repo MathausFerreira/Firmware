@@ -51,11 +51,11 @@
 #include <matrix/matrix/math.hpp>
 #include <mathlib/math/Limits.hpp>
 
-class AttitudeControl
+class GRIN_AttitudeControl
 {
 public:
-	AttitudeControl() = default;
-	~AttitudeControl() = default;
+        GRIN_AttitudeControl() = default;
+        ~GRIN_AttitudeControl() = default;
 
 	/**
 	 * Set proportional attitude control gain

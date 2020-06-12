@@ -51,7 +51,7 @@
  * @increment 0.1
  * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(MC_ROLL_P, 6.5f);
+PARAM_DEFINE_FLOAT(GR_ROLL_P, 6.5f);
 
 /**
  * Pitch P gain
@@ -65,7 +65,7 @@ PARAM_DEFINE_FLOAT(MC_ROLL_P, 6.5f);
  * @increment 0.1
  * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(MC_PITCH_P, 6.5f);
+PARAM_DEFINE_FLOAT(GR_PITCH_P, 6.5f);
 
 /**
  * Yaw P gain
@@ -79,7 +79,7 @@ PARAM_DEFINE_FLOAT(MC_PITCH_P, 6.5f);
  * @increment 0.1
  * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(MC_YAW_P, 2.8f);
+PARAM_DEFINE_FLOAT(GR_YAW_P, 2.8f);
 
 /**
  * Yaw weight
@@ -89,7 +89,7 @@ PARAM_DEFINE_FLOAT(MC_YAW_P, 2.8f);
  * in yaw compared to the other axes and it makes sense because yaw is not critical for
  * stable hovering or 3D navigation.
  *
- * For yaw control tuning use MC_YAW_P. This ratio has no inpact on the yaw gain.
+ * For yaw control tuning use GR_YAW_P. This ratio has no inpact on the yaw gain.
  *
  * @unit 1/s
  * @min 0.0
@@ -98,7 +98,7 @@ PARAM_DEFINE_FLOAT(MC_YAW_P, 2.8f);
  * @increment 0.1
  * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(MC_YAW_WEIGHT, 0.4f);
+PARAM_DEFINE_FLOAT(GR_YAW_WEIGHT, 0.4f);
 
 /**
  * Max roll rate
@@ -117,7 +117,7 @@ PARAM_DEFINE_FLOAT(MC_YAW_WEIGHT, 0.4f);
  * @increment 5
  * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(MC_ROLLRATE_MAX, 220.0f);
+PARAM_DEFINE_FLOAT(GR_ROLLRATE_MAX, 220.0f);
 
 /**
  * Max pitch rate
@@ -136,7 +136,7 @@ PARAM_DEFINE_FLOAT(MC_ROLLRATE_MAX, 220.0f);
  * @increment 5
  * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(MC_PITCHRATE_MAX, 220.0f);
+PARAM_DEFINE_FLOAT(GR_PITCHRATE_MAX, 220.0f);
 
 /**
  * Max yaw rate
@@ -148,7 +148,7 @@ PARAM_DEFINE_FLOAT(MC_PITCHRATE_MAX, 220.0f);
  * @increment 5
  * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(MC_YAWRATE_MAX, 200.0f);
+PARAM_DEFINE_FLOAT(GR_YAWRATE_MAX, 200.0f);
 
 /**
  * Threshold for Rattitude mode
@@ -162,4 +162,4 @@ PARAM_DEFINE_FLOAT(MC_YAWRATE_MAX, 200.0f);
  * @increment 0.01
  * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(MC_RATT_TH, 0.8f);
+PARAM_DEFINE_FLOAT(GR_RATT_TH, 0.8f);

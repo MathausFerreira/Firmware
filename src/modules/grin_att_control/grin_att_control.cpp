@@ -89,7 +89,7 @@ GrinAttitudeControl::parameters_updated()
 
     // angular rate limits
     using math::radians;
-
+    _attitude_control.setRateLimit(Vector3f(radians(_param_mc_rollrate_max.get()), radians(_param_mc_pitchrate_max.get()),radians(_param_mc_yawrate_max.get())));
 
     _man_tilt_max = math::radians(_param_mpc_man_tilt_max.get());
 }
@@ -405,7 +405,7 @@ https://www.research-collection.ethz.ch/bitstream/handle/20.500.11850/154099/eth
     return 0;
 }
 
-int mc_att_control_main(int argc, char *argv[])
+int grin_att_control_main(int argc, char *argv[])
 {
     return GrinAttitudeControl::main(argc, argv);
 }

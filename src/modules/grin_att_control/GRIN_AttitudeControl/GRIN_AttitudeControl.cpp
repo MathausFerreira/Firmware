@@ -32,16 +32,16 @@
  ****************************************************************************/
 
 /**
- * @file AttitudeControl.cpp
+ * @file GRIN_AttitudeControl.cpp
  */
 
-#include <AttitudeControl.hpp>
+#include <GRIN_AttitudeControl.hpp>
 
 #include <mathlib/math/Functions.hpp>
 
 using namespace matrix;
 
-void AttitudeControl::setProportionalGain(const matrix::Vector3f &proportional_gain, const float yaw_weight)
+void GRIN_AttitudeControl::setProportionalGain(const matrix::Vector3f &proportional_gain, const float yaw_weight)
 {
 	_proportional_gain = proportional_gain;
 	_yaw_w = math::constrain(yaw_weight, 0.f, 1.f);
@@ -52,7 +52,7 @@ void AttitudeControl::setProportionalGain(const matrix::Vector3f &proportional_g
 	}
 }
 
-matrix::Vector3f AttitudeControl::update(matrix::Quatf q, matrix::Quatf qd, const float yawspeed_feedforward)
+matrix::Vector3f GRIN_AttitudeControl::update(matrix::Quatf q, matrix::Quatf qd, const float yawspeed_feedforward)
 {
 	// ensure input quaternions are exactly normalized because acosf(1.00001) == NaN
 	q.normalize();

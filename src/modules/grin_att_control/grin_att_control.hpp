@@ -55,7 +55,7 @@
 #include <uORB/topics/vehicle_land_detected.h>
 #include <vtol_att_control/vtol_type.h>
 
-#include <AttitudeControl.hpp>
+#include <GRIN_AttitudeControl.hpp>
 
 /**
  * Multicopter attitude control app start / stop handling function
@@ -102,7 +102,7 @@ private:
          */
         void		control_attitude();
 
-        AttitudeControl _attitude_control; ///< class for attitude control calculations
+        GRIN_AttitudeControl _attitude_control; ///< class for attitude control calculations
 
         uORB::Subscription _v_att_sp_sub{ORB_ID(vehicle_attitude_setpoint)};		/**< vehicle attitude setpoint subscription */
         uORB::Subscription _v_rates_sp_sub{ORB_ID(vehicle_rates_setpoint)};		/**< vehicle rates setpoint subscription */
@@ -136,18 +136,18 @@ private:
         bool _reset_yaw_sp{true};
 
         DEFINE_PARAMETERS(
-                (ParamFloat<px4::params::MC_ROLL_P>) _param_mc_roll_p,
-                (ParamFloat<px4::params::MC_PITCH_P>) _param_mc_pitch_p,
-                (ParamFloat<px4::params::MC_YAW_P>) _param_mc_yaw_p,
-                (ParamFloat<px4::params::MC_YAW_WEIGHT>) _param_mc_yaw_weight,
+                (ParamFloat<px4::params::GR_ROLL_P>) _param_mc_roll_p,
+                (ParamFloat<px4::params::GR_PITCH_P>) _param_mc_pitch_p,
+                (ParamFloat<px4::params::GR_YAW_P>) _param_mc_yaw_p,
+                (ParamFloat<px4::params::GR_YAW_WEIGHT>) _param_mc_yaw_weight,
 
-                (ParamFloat<px4::params::MC_ROLLRATE_MAX>) _param_mc_rollrate_max,
-                (ParamFloat<px4::params::MC_PITCHRATE_MAX>) _param_mc_pitchrate_max,
-                (ParamFloat<px4::params::MC_YAWRATE_MAX>) _param_mc_yawrate_max,
+                (ParamFloat<px4::params::GR_ROLLRATE_MAX>) _param_mc_rollrate_max,
+                (ParamFloat<px4::params::GR_PITCHRATE_MAX>) _param_mc_pitchrate_max,
+                (ParamFloat<px4::params::GR_YAWRATE_MAX>) _param_mc_yawrate_max,
 
                 (ParamFloat<px4::params::MPC_MAN_Y_MAX>) _param_mpc_man_y_max,			/**< scaling factor from stick to yaw rate */
 
-                (ParamFloat<px4::params::MC_RATT_TH>) _param_mc_ratt_th,
+                (ParamFloat<px4::params::GR_RATT_TH>) _param_mc_ratt_th,
 
                 /* Stabilized mode params */
                 (ParamFloat<px4::params::MPC_MAN_TILT_MAX>) _param_mpc_man_tilt_max,			/**< maximum tilt allowed for manual flight */

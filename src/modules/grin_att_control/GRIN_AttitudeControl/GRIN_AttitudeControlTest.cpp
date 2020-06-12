@@ -32,22 +32,22 @@
  ****************************************************************************/
 
 #include <gtest/gtest.h>
-#include <AttitudeControl.hpp>
+#include <GRIN_GRIN_AttitudeControl.hpp>
 #include <mathlib/math/Functions.hpp>
 
 using namespace matrix;
 
-TEST(AttitudeControlTest, AllZeroCase)
+TEST(GRIN_AttitudeControlTest, AllZeroCase)
 {
-	AttitudeControl attitude_control;
+        GRIN_AttitudeControl attitude_control;
 	Vector3f rate_setpoint = attitude_control.update(Quatf(), Quatf(), 0.f);
 	EXPECT_EQ(rate_setpoint, Vector3f());
 }
 
-class AttitudeControlConvergenceTest : public ::testing::Test
+class GRIN_AttitudeControlConvergenceTest : public ::testing::Test
 {
 public:
-	AttitudeControlConvergenceTest()
+        GRIN_AttitudeControlConvergenceTest()
 	{
 		_attitude_control.setProportionalGain(Vector3f(.5f, .6f, .3f), .4f);
 		_attitude_control.setRateLimit(Vector3f(100.f, 100.f, 100.f));
@@ -78,12 +78,12 @@ public:
 		EXPECT_GT(i, 0);
 	}
 
-	AttitudeControl _attitude_control;
+        GRIN_AttitudeControl _attitude_control;
 	Quatf _quat_state;
 	Quatf _quat_goal;
 };
 
-TEST_F(AttitudeControlConvergenceTest, AttitudeControlConvergence)
+TEST_F(GRIN_AttitudeControlConvergenceTest, GRIN_AttitudeControlConvergence)
 {
 	const int inputs = 8;
 
@@ -110,10 +110,10 @@ TEST_F(AttitudeControlConvergenceTest, AttitudeControlConvergence)
 	}
 }
 
-TEST(AttitudeControlTest, YawWeightScaling)
+TEST(GRIN_AttitudeControlTest, YawWeightScaling)
 {
 	// GIVEN: default tuning
-	AttitudeControl attitude_control;
+        GRIN_AttitudeControl attitude_control;
 	const float yaw_gain = 2.8f;
 	const float yaw_sp = .1f;
 	attitude_control.setProportionalGain(Vector3f(6.5f, 6.5f, yaw_gain), .4f);
